@@ -4,6 +4,8 @@
 *.depend
 *-bin
 *.a
-config.log
-config.status
-src/libs/txml/gennmtab/gennmtab
+srv/config.log
+srv/config.status
+srv/src/libs/txml/gennmtab/gennmtab
+client/client
+sclient

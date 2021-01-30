@@ -1,1 +1,1 @@
-/home/marek/ai4g/torcs-1.3.4/torcs-1.3.4/src/libs/confscreens/openglconfig.h
+/home/marek/ai4g/torcs-1.3.4/torcs-1.3.4/srv/src/libs/confscreens/openglconfig.h
