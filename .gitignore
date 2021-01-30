@@ -1,0 +1,9 @@
+*.o
+*.so
+*.spec
+*.depend
+*-bin
+*.a
+config.log
+config.status
+src/libs/txml/gennmtab/gennmtab
