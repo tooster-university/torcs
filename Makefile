@@ -1,4 +1,4 @@
-.PHONY : install srv_install srv client clean all
+.PHONY : install srv_install srv client client_clean srv_clean clean all
 
 all: srv client
 
@@ -10,9 +10,13 @@ srv:
 srv_install: srv
 	cd srv && make install
 
-client:
+client: client_clean
 	cd client && make && ln -sf ./client/client ../sclient
 
-clean:
-	cd srv && make clean
+client_clean: 
 	cd client && make clean && rm -f ../sclient
+
+srv_clean: 
+	cd srv && make clean
+
+clean: srv_clean client_clean

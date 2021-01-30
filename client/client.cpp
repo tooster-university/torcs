@@ -30,6 +30,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include __DRIVER_INCLUDE__
+#include "DriverParameters.h"
 
 /*** defines for UDP *****/
 #define UDP_MSGLEN 1000
@@ -57,7 +58,7 @@ using namespace std;
 //void parse_args(int argc, char *argv[], char *hostName, unsigned int &serverPort, char *id, unsigned int &maxEpisodes,unsigned int &maxSteps,
 //		bool &noise, double &noiseAVG, double &noiseSTD, long &seed, char *trackName, BaseDriver::tstage &stage);
 void parse_args(int argc, char *argv[], char *hostName, unsigned int &serverPort, char *id, unsigned int &maxEpisodes,
-		  unsigned int &maxSteps, char *trackName, BaseDriver::tstage &stage);
+		  unsigned int &maxSteps, char *trackName, BaseDriver::tstage &stage, DriverParameters& parameters);
 
 int main(int argc, char *argv[])
 {
@@ -75,6 +76,7 @@ int main(int argc, char *argv[])
 //    long seed;
     char trackName[1000];
     BaseDriver::tstage stage;
+    DriverParameters parameters;
 
     tSockAddrIn serverAddress;
     struct hostent *hostInfo;
@@ -98,8 +100,7 @@ int main(int argc, char *argv[])
 #endif
 
 //    parse_args(argc,argv,hostName,serverPort,id,maxEpisodes,maxSteps,noise,noiseAVG,noiseSTD,seed,trackName,stage);
-
-    parse_args(argc,argv,hostName,serverPort,id,maxEpisodes,maxSteps,trackName,stage);
+    parse_args(argc,argv,hostName,serverPort,id,maxEpisodes,maxSteps,trackName,stage, parameters);
 
 //    if (seed>0)
 //    	srand(seed);
@@ -155,7 +156,7 @@ int main(int argc, char *argv[])
            hostInfo->h_addr_list[0], hostInfo->h_length);
     serverAddress.sin_port = htons(serverPort);
 
-    tDriver d;
+    tDriver d(parameters);
     strcpy(d.trackName,trackName);
     d.stage = stage;
 
@@ -296,7 +297,7 @@ int main(int argc, char *argv[])
 //void parse_args(int argc, char *argv[], char *hostName, unsigned int &serverPort, char *id, unsigned int &maxEpisodes,
 //		  unsigned int &maxSteps,bool &noise, double &noiseAVG, double &noiseSTD, long &seed, char *trackName, BaseDriver::tstage &stage)
 void parse_args(int argc, char *argv[], char *hostName, unsigned int &serverPort, char *id, unsigned int &maxEpisodes,
-		  unsigned int &maxSteps, char *trackName, BaseDriver::tstage &stage)
+		  unsigned int &maxSteps, char *trackName, BaseDriver::tstage &stage, DriverParameters& parameters)
 {
     int		i;
 
@@ -347,6 +348,11 @@ void parse_args(int argc, char *argv[], char *hostName, unsigned int &serverPort
 //    	    	sscanf(argv[i],"seed:%ld",&seed);
 //    	    	i++;
 //    	}
+    	else if (strncmp(argv[i], "maxSpeed:", 5) == 0)
+    	{
+    	    	sscanf(argv[i],"maxSpeed:%f",&parameters.maxSpeed);
+    	    	i++;
+    	}
     	else if (strncmp(argv[i], "track:", 6) == 0)
     	{
     	    	sscanf(argv[i],"track:%s",trackName);

@@ -5,14 +5,14 @@ CPPFLAGS      = -Wall -g
 #CPPFLAGS      = -Wall -g -D __UDP_CLIENT_VERBOSE__
 
 #Put here the name of your driver class
-DRIVER_CLASS = SimpleDriver
+DRIVER_CLASS = MyDriver
 #Put here the filename of your driver class header 
 DRIVER_INCLUDE = '"$(DRIVER_CLASS).h"' 
 DRIVER_OBJ = $(DRIVER_CLASS).o
 
 EXTFLAGS = -D __DRIVER_CLASS__=$(DRIVER_CLASS) -D __DRIVER_INCLUDE__=$(DRIVER_INCLUDE)
 
-OBJECTS = WrapperBaseDriver.o SimpleParser.o CarState.o CarControl.o $(DRIVER_OBJ)
+OBJECTS = WrapperBaseDriver.o SimpleParser.o CarState.o CarControl.o SimpleDriver.o $(DRIVER_OBJ) 
 
 all: $(OBJECTS) client
 
