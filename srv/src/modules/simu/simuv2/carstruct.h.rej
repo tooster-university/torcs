@@ -1,0 +1,10 @@
+--- modules/simu/simuv2/carstruct.h	2013-04-22 16:26:18.637378225 +0200
++++ modules/simu/simuv2/carstruct.h	2013-03-29 11:47:29.530815000 +0100
+@@ -81,6 +81,7 @@
+     DtShapeRef	shape;		/* for collision */
+     int		blocked;		// Flag to show if the car has had already a collision in the same timestep.
+     int		dammage;
++    int     fakeDammage;    
+     
+     tDynPt	restPos;	/* target rest position after the car is broken */
+ 

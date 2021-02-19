@@ -1,0 +1,21 @@
+--- libs/raceengineclient/racestate.cpp	2013-04-22 16:26:18.645378225 +0200
++++ libs/raceengineclient/racestate.cpp	2013-03-29 11:47:29.530815000 +0100
+@@ -109,7 +109,17 @@
+ 				/* Interrupted by player */
+ 				mode = ReRaceStop();
+ 				if (mode & RM_NEXT_STEP) {
+-					ReInfo->_reState = RE_STATE_RACE_END;
++					if (RESTART==1)
++					{
++						RESTART=0;
++						ReRaceCleanup();
++						ReInfo->_reState = RE_STATE_PRE_RACE;
++						GfuiScreenActivate(ReInfo->_reGameScreen);
++					}
++					else
++					{
++						ReInfo->_reState = RE_STATE_RACE_END;
++					}
+ 				}
+ 				break;
+ 

@@ -1,0 +1,10 @@
+--- modules/simu/simuv2/simu.cpp	2013-04-22 16:26:18.633378225 +0200
++++ modules/simu/simuv2/simu.cpp	2013-03-29 11:47:29.530815000 +0100
+@@ -425,6 +425,7 @@
+ 		carElt->priv.collision |= car->collision;
+ 		carElt->priv.simcollision = car->collision;
+ 		carElt->_dammage = car->dammage;
++		carElt->_fakeDammage = car->fakeDammage;		
+ 	}
+ }
+ 

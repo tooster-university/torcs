@@ -1,0 +1,22 @@
+--- linux/Makefile	2013-04-22 16:26:18.689378225 +0200
++++ linux/Makefile	2013-03-29 11:47:29.530815000 +0100
+@@ -25,9 +25,7 @@
+ 
+ LDFLAGS = -rdynamic
+ 
+-SOLIBS  =  -lracescreens  \
+-	   -lrobottools   \
+-	   -lclient       \
++SOLIBS  =  -lclient       \
+ 	   -lconfscreens  \
+ 	   -ltgf          \
+ 	   -ltgfclient    \
+@@ -35,6 +33,8 @@
+ 	   -lplibul	  \
+ 	   -lraceengine   \
+ 	   -lmusicplayer  \
++	   -lracescreens  \
++	   -lrobottools   \
+ 	   -llearning
+ 
+ EXPDIR  = include
