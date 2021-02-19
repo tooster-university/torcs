@@ -21,6 +21,7 @@ public class Config {
     public static int POPULATION_SIZE;
     public static int GENERATIONS;
     public static int START_GENERATION;
+    public static int ELITE;
     //
     private static int edgeCnt;
     private static int nodeCnt;
@@ -50,6 +51,7 @@ public class Config {
 
             POPULATION_SIZE = Integer.parseInt(config.getProperty("populationSize"));
             GENERATIONS = Integer.parseInt(config.getProperty("generations", "1000"));
+            ELITE = Integer.parseInt(config.getProperty("elite", "0"));
 
             MAX_STEPS = Integer.parseInt(config.getProperty("maxSteps", "0"));
 

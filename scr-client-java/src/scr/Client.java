@@ -11,7 +11,7 @@ import scr.Controller.Stage;
  */
 public class Client {
 
-	private static final int UDP_TIMEOUT = 10000;
+	private static final int UDP_TIMEOUT = 300;
 	private static int port;
 	private static String host;
 	private static String clientId;
