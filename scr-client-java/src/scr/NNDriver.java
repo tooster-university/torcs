@@ -52,7 +52,6 @@ public class NNDriver extends Controller {
         // ! but would be better to exclude cars maximizing distance travelled in wrong way
         specimen.distance = sensors.getDistanceRaced();
         if(Math.abs(sensors.getTrackPosition()) >= 1.0) {
-            System.err.println("off track!");
             specimen.offtrackPenaltyScaler = 0.8;
         }
 //        if (actionId % 100 == 0) System.err.println(sensors.getDistanceRaced());
@@ -91,9 +90,9 @@ public class NNDriver extends Controller {
         specimen.assignScore();
 
         System.out.println("generation:" + currentGenerationId +
-                " specimen:" + currentNetworkID +
-                " traveled:" + specimen.distance +
-                " scored:" + specimen.score);
+                "\tspecimen:" + currentNetworkID +
+                "\ttraveled:" + specimen.distance +
+                "\tscored:" + specimen.score);
 
         if (Client.verbose)
             System.err.println("here is the network:\n" + specimen.network.toString());
