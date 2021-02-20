@@ -19,8 +19,8 @@ public class NNDriver extends Controller {
     private int currentGenerationId = START_GENERATION;
 
     {
-        for (int i = 0; i < rank.length; i++) {
-            if (currentGenerationId == 0) { // if we start anew - generate random networks
+        if (currentGenerationId == 0) { // if we start anew - generate random networks
+            for (int i = 0; i < rank.length; i++) {
                 rank[i] = new NNRankEntry();
                 if (roulette == null) {
                     rank[i].network = new TorcsNN(NN.nextRandomWeights());
@@ -29,13 +29,16 @@ public class NNDriver extends Controller {
                     Genetics.mutate(cloned, MUTATION_PROBABILITY);
                     new TorcsNN(cloned);
                 }
-            } else { // otherwise we have to load ranking from config
-                deserializeRank();
             }
+        } else { // otherwise we have to load ranking from config
+            deserializeRank();
         }
     }
 
     private NNRankEntry getCurrentSpecimen() {return rank[currentNetworkID];}
+
+    private static final int LOWER_RPM = 1000;
+    private static final int UPPER_RPM = 2700;
 
     @Override
     public Action control(SensorModel sensors) {
@@ -50,14 +53,29 @@ public class NNDriver extends Controller {
         specimen.distance = sensors.getDistanceRaced();
 //        if (actionId % 100 == 0) System.err.println(sensors.getDistanceRaced());
 
+        var action = specimen.network.eval(sensors);
+
         // dead simple network evaluation
         // early kill non-moving cars - replace them with randomly generated networks
-        if (actionId > 500 && Math.abs(specimen.distance) < 5.0) {
+
+        if (actionId > 500 && Math.abs(specimen.distance) < 5.0 && STAGNATINO_REPLACEMENT) {
             actionId = -1;
-            System.err.println("Stagnation (replacing)");
+            System.err.println("Stagnation - replacing with random network");
             specimen.network = new TorcsNN(TorcsNN.nextRandomWeights());
         }
-        return specimen.network.eval(sensors);
+
+        // simple gearbox algorithm
+        var currentGear = sensors.getGear();
+        var currentRPM = sensors.getRPM();
+
+        if(currentGear == 0)
+            action.gear = 1;
+        if(currentRPM > UPPER_RPM)
+            action.gear = currentGear + 1;
+        if(currentGear < LOWER_RPM && currentGear != 0)
+            action.gear = currentGear - 1;
+
+        return action;
     }
 
     @Override
@@ -88,7 +106,7 @@ public class NNDriver extends Controller {
     }
 
     @Override
-    public void shutdown() { serializeRank("cmpl"); }
+    public void shutdown() { serializeRank("end"); }
 
     private void evolvePopulation() {
         // crossover children
@@ -103,7 +121,7 @@ public class NNDriver extends Controller {
 
         var rawScores = Arrays.stream(rank).mapToDouble(rank -> rank.score).toArray();
         var mean = Arrays.stream(rawScores).average().getAsDouble();
-        System.out.println("Evolving to generation " + currentGenerationId + "\n"+
+        System.out.println("Evolving to generation " + currentGenerationId + "\n" +
                 "\tBest score was:\t" + rank[0].score + "\n" +
                 "\tBest distance:\t" + rank[0].distance + "\n" +
                 "\tAverage score:\t" + mean);
@@ -120,7 +138,7 @@ public class NNDriver extends Controller {
                         LERP_CROSSOVER_COMMON_RANDOM)
                 );
                 // randomly mutate edges with given probability
-                    Genetics.mutate(newRank[i].network.weights, MUTATION_PROBABILITY);
+                Genetics.mutate(newRank[i].network.weights, MUTATION_PROBABILITY);
             }
         }
 
@@ -134,14 +152,23 @@ public class NNDriver extends Controller {
      */
     private void serializeRank(String postfix) {
         try {
-            var path = String.join(FILE_SEPARATOR,
+            var genPath = String.join(FILE_SEPARATOR,
                     FILE_DIR + FILE_PREFIX,
                     currentGenerationId + (postfix.isBlank() ? "" : FILE_SEPARATOR + postfix)
             ) + FILE_EXT;
-            System.out.println("Serializing population to file `" + path + "`");
-            FileOutputStream fos = new FileOutputStream(path);
+            System.out.println("Serializing population to file `" + genPath + "`");
+            FileOutputStream fos = new FileOutputStream(genPath);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(rank);
+
+            var bestPath = String.join(FILE_SEPARATOR,
+                    FILE_DIR + FILE_PREFIX,
+                    currentGenerationId + (postfix.isBlank() ? "" : FILE_SEPARATOR + postfix),
+                    "best"
+            ) + FILE_EXT;
+            FileOutputStream bestFos = new FileOutputStream(bestPath);
+            ObjectOutputStream bestOos = new ObjectOutputStream(fos);
+            bestOos.writeObject(rank[0]);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -175,7 +202,7 @@ public class NNDriver extends Controller {
         public TorcsNN network;
 
         public double score = 0.0; //score of neural net
-        private transient double distance;
+        private double distance;
 //        private transient double currentLapTime = 0.0;
 
         public void assignScore() {
