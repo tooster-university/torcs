@@ -1,6 +1,16 @@
-# TNN torcs
+# TNN torcs (WIP raport)
 
-## 777
+Genetically evolved neural network.
+
+- Crossover selection: roulette
+- Gene crossover: LERPing two parents with random weight
+- Mutation: random of every edge weight with given probability (individual or common for chromosome)
+- Population: 35
+- Elite: 5
+
+## 66 - 2 hidden layers, 6 nodes each. Locked (no) clutch, no reverse
+
+## 777 - 3 hidden layers, 7 nodes each
 
 starting params:
 
@@ -41,9 +51,13 @@ Evolving to generation 15
 > - Best distance: 1200.32
 > - Average score: 5490.692676345854
 
-### common problem at this stage - frequent oscillations and gearbox on max
+```
+common problem at this stage - frequent oscillations and gearbox on max
+```
 
-#### unlocking clutch and gearbox
+```
+unlocking clutch and gearbox
+```
 
 Evolving to generation 38
 
@@ -87,12 +101,22 @@ Evolving to generation 101
 > - Best distance: 2806.9
 > - Average score: 36447.81137088817
 
-### Slight oscillations on straight segments, soft start, high RPM oscilating between 3-4, doesn't collide. I'm increasing generations to 6k, max steps to 30000, launching road track - spring (tight and frequent turns, long track). I also add fast quit if we go offroad by 1.3 of track sensor
+```
+Slight oscillations on straight segments, soft start, high RPM oscilating between 3-4, doesn't collide. I'm increasing generations to 6k, max steps to 30000, launching road track - spring (tight and frequent turns, long track). I also add fast quit if we go offroad by 1.3 of track sensor
+```
 
-#### ***WOW !***
+#### **WOW**
 
 Evolving to generation 118
 
 > - Best score was: 777708.0308409263
 > - Best distance: 9813.36
 > - Average score: 37403.10728081172
+
+#### ***WOW !!1!11!***
+
+Evolving to generation 135
+
+> - Best score was: 1657336.5765238586
+> - Best distance: 14004.7
+> - Average score: 206388.66118308454
