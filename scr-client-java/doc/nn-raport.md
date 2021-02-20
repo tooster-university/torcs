@@ -120,3 +120,9 @@ Evolving to generation 135
 > - Best score was: 1657336.5765238586
 > - Best distance: 14004.7
 > - Average score: 206388.66118308454
+
+^ BUT it drives on 1st gear XDDD
+
+```
+I'm going sleep and leaving it to calculate
+```
