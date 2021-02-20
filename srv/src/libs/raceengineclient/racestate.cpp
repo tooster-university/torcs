@@ -114,7 +114,11 @@ ReStateManage(void)
 						RESTART=0;
 						ReRaceCleanup();
 						ReInfo->_reState = RE_STATE_PRE_RACE;
-						GfuiScreenActivate(ReInfo->_reGameScreen);
+                        if (ReInfo->_displayMode != RM_DISP_MODE_CONSOLE)
+                        {
+                               GfuiScreenActivate(ReInfo->_reGameScreen);
+                        }
+						// GfuiScreenActivate(ReInfo->_reGameScreen);
 					}
 					else
 					{

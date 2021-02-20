@@ -170,7 +170,8 @@ main(int argc, char *argv[])
 	} else {
 		// Run race from console, no Window, no OpenGL/OpenAL etc.
 		// Thought for blind scripted AI training
-		ReRunRaceOnConsole(raceconfig);
+        while(true)
+		    ReRunRaceOnConsole(raceconfig);
 	}
 
 	return 0;					/* just for the compiler, never reached */

@@ -91,11 +91,16 @@ public class NNDriver extends Controller {
     public void shutdown() { serializeRank("cmpl"); }
 
     private void evolvePopulation() {
-        ++currentGenerationId;
         // crossover children
         var newRank = new NNRankEntry[POPULATION_SIZE];
 
         Arrays.sort(rank, Collections.reverseOrder()); // make best first for convenience
+        System.out.println("Overriding current population with sorted one"); // GUI will show best individual first
+        serializeRank("");
+
+        // advance generation
+        ++currentGenerationId;
+
         var rawScores = Arrays.stream(rank).mapToDouble(rank -> rank.score).toArray();
         var mean = Arrays.stream(rawScores).average().getAsDouble();
         System.out.println("Evolving to generation " + currentGenerationId + "\n"+
@@ -115,7 +120,7 @@ public class NNDriver extends Controller {
                         LERP_CROSSOVER_COMMON_RANDOM)
                 );
                 // randomly mutate edges with given probability
-                Genetics.mutate(newRank[i].network.weights, MUTATION_PROBABILITY);
+                    Genetics.mutate(newRank[i].network.weights, MUTATION_PROBABILITY);
             }
         }
 
