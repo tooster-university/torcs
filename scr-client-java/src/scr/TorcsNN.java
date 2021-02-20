@@ -35,8 +35,8 @@ public class TorcsNN extends NN<SensorModel, Action> implements Serializable {
             steering = networkOutput[0] - 1.0; // tweak ReLu output to negatives
             accelerate = networkOutput[1]; // 0-1
             brake = networkOutput[2]; // 0-1
-            clutch = 0.0; //networkOutput[3]; // 0-1
-            gear = (int) (Math.round(networkOutput[4]) /* - 1*/); // tweak ReLu to allow reverse with -1
+            clutch = networkOutput[3]; // 0-1
+            gear = (int) (Math.round(networkOutput[4])  - 1); // tweak ReLu to allow reverse with -1
         }};
     }
 }

@@ -17,6 +17,7 @@ public class NNDriver extends Controller {
     private Genetics.Roulette roulette = null;
     private int currentNetworkID = 0;
     private int currentGenerationId = START_GENERATION;
+    private int gearChangeTimestep;
 
     {
         if (currentGenerationId == 0) { // if we start anew - generate random networks
@@ -37,8 +38,9 @@ public class NNDriver extends Controller {
 
     private NNRankEntry getCurrentSpecimen() {return rank[currentNetworkID];}
 
-    private static final int LOWER_RPM = 1000;
-    private static final int UPPER_RPM = 2700;
+    private static final int LOWER_RPM = 2000;
+    private static final int UPPER_RPM = 3200;
+    private static final int GEAR_CHANGE_TIMEFRAME = 100;
 
     @Override
     public Action control(SensorModel sensors) {
@@ -71,12 +73,18 @@ public class NNDriver extends Controller {
         var currentGear = sensors.getGear();
         var currentRPM = sensors.getRPM();
 
-        if(currentGear == 0)
-            action.gear = 1;
-        if(currentRPM > UPPER_RPM)
-            action.gear = currentGear + 1;
-//        if(currentGear < LOWER_RPM && currentGear != 0)
+//        if(currentGear == 0) {
+//            action.gear = 1;
+//            gearChangeTimestep = actionId;
+//        }
+//        if(currentRPM > UPPER_RPM && actionId - gearChangeTimestep > GEAR_CHANGE_TIMEFRAME) {
+//            action.gear = currentGear + 1;
+//            gearChangeTimestep = actionId;
+//        }
+//        if(currentGear < LOWER_RPM && currentGear > 1 && actionId - gearChangeTimestep > GEAR_CHANGE_TIMEFRAME) {
 //            action.gear = currentGear - 1;
+//            gearChangeTimestep = actionId;
+//        }
 
         return action;
     }
@@ -163,15 +171,6 @@ public class NNDriver extends Controller {
             FileOutputStream fos = new FileOutputStream(genPath);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(rank);
-
-            var bestPath = String.join(FILE_SEPARATOR,
-                    FILE_DIR + FILE_PREFIX,
-                    currentGenerationId + (postfix.isBlank() ? "" : FILE_SEPARATOR + postfix),
-                    "best"
-            ) + FILE_EXT;
-            FileOutputStream bestFos = new FileOutputStream(bestPath);
-            ObjectOutputStream bestOos = new ObjectOutputStream(fos);
-            bestOos.writeObject(rank[0]);
 
         } catch (IOException e) {
             e.printStackTrace();
