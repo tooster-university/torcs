@@ -126,3 +126,8 @@ Evolving to generation 135
 ```
 I'm going sleep and leaving it to calculate
 ```
+
+```
+It's wobbly and it constantly on gear 1... But it drifts on turns and stays on track.
+Adding penalty for wobbling and RPM outside of range
+```

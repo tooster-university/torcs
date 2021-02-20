@@ -12,6 +12,15 @@ import static scr.Config.*;
 @SuppressWarnings("unused")
 public class NNDriver extends Controller {
 
+    private static final int LOWER_RPM = 2000;
+    private static final int UPPER_RPM = 3200;
+    private static final int GEAR_CHANGE_TIMEFRAME = 100;
+    // valid ranges of RPM
+    private static final int[] GEAR_LOWER_RPM = new int[]{-15000, 0, 0, 4600, 4900, 5100, 5200, 5300};
+    private static final int[] GEAR_UPPER_RPM = new int[]{15000, 0, 7700, 7000, 6700, 6500, 6300, 15000};
+    // abs(steer) < magnitude is said to be steady
+    private static final double STEER_MAGNITUDE = 0.1;
+    //
     int actionId = -1;
     private NNRankEntry[] rank = new NNRankEntry[POPULATION_SIZE];
     private Genetics.Roulette roulette = null;
@@ -38,10 +47,6 @@ public class NNDriver extends Controller {
 
     private NNRankEntry getCurrentSpecimen() {return rank[currentNetworkID];}
 
-    private static final int LOWER_RPM = 2000;
-    private static final int UPPER_RPM = 3200;
-    private static final int GEAR_CHANGE_TIMEFRAME = 100;
-
     @Override
     public Action control(SensorModel sensors) {
         ++actionId;
@@ -54,9 +59,9 @@ public class NNDriver extends Controller {
         // ! sensors.getDistanceFromStartLine() doesn't start from 0 but from ~1.5k :/
         // ! but would be better to exclude cars maximizing distance travelled in wrong way
         specimen.distance = sensors.getDistanceRaced();
-        if(Math.abs(sensors.getTrackPosition()) >= 1.0) {
+        if (Math.abs(sensors.getTrackPosition()) >= 1.0) {
             specimen.offtrackPenaltyScaler = 0.8;
-            if(OFFROAD_KILL && Math.abs(sensors.getTrackPosition()) >= 1.3)
+            if (OFFROAD_KILL && Math.abs(sensors.getTrackPosition()) >= 1.3)
                 action.restartRace = true;
         }
 
@@ -75,6 +80,22 @@ public class NNDriver extends Controller {
         // simple gearbox algorithm
         var currentGear = sensors.getGear();
         var currentRPM = sensors.getRPM();
+        // steer overshoot counter
+        if (action.steering < -STEER_MAGNITUDE)
+            specimen.steerCounter[0]++;
+        else if (action.steering > +STEER_MAGNITUDE)
+            specimen.steerCounter[2]++;
+        else
+            specimen.steerCounter[1]++;
+
+
+        // RPM under/overshoot counter
+        if (currentRPM < GEAR_LOWER_RPM[currentGear + 1])
+            specimen.rpmCounter[0]++; // under RPM
+        else if (currentRPM > GEAR_UPPER_RPM[currentGear + 1])
+            specimen.rpmCounter[2]++;
+        else
+            specimen.rpmCounter[1]++;
 
 //        if(currentGear == 0) {
 //            action.gear = 1;
@@ -203,16 +224,54 @@ public class NNDriver extends Controller {
     public static class NNRankEntry implements Serializable, Comparable<NNRankEntry> {
         @Serial
         private static final long serialVersionUID = 6953670818228571475L;
-
+        //        private transient double currentLapTime = 0.0;
+        private static final double RPM_PENALTY = 0.2;
+        private static final double STEER_PENALTY = 0.2; // overshoot get this part of score
         public TorcsNN network;
-
         public double score = 0.0; //score of neural net
-        private double distance;
         public double offtrackPenaltyScaler = 1.0;
-//        private transient double currentLapTime = 0.0;
+        // to avoid calculating wobbling frequency by fft, simple heuristic to assign bonus for cars, that steer
+        // for the majority of time to the middle
+        public transient int[] steerCounter = new int[3]; // counts fraction of actions taken to steer left, ~middle,
+        // right
+        public transient int[] rpmCounter = new int[3]; // counts actions for RPM range. steady RPM get bonus
+        private double distance;
 
         public void assignScore() {
-            score = offtrackPenaltyScaler*Math.signum(distance) * Math.pow(Math.abs(distance), 1.5);
+            switch (SCORE_MODE) {
+                case "distance":
+                    score = offtrackPenaltyScaler * Math.signum(distance) * Math.pow(Math.abs(distance), 1.5);
+                    break;
+                case "steady":
+                    if (offtrackPenaltyScaler < 1.0) {
+                        score = 0.2 * Math.signum(distance) * Math.pow(Math.abs(distance), 1.5);
+                        break;
+                    }
+                    score = offtrackPenaltyScaler * Math.signum(distance) * Math.pow(Math.abs(distance), 1.5);
+                    double totalSteer = Arrays.stream(steerCounter).sum();
+                    score = score * (steerCounter[0] + steerCounter[2]) * STEER_PENALTY / totalSteer +
+                            score * steerCounter[1] * (1.0 - STEER_PENALTY) / totalSteer;
+                    double totalRPM = Arrays.stream(rpmCounter).sum();
+                    score = score * (rpmCounter[0] + rpmCounter[2]) * RPM_PENALTY / totalSteer +
+                            score * rpmCounter[1] * (1.0 - RPM_PENALTY) / totalSteer;
+            }
+        }
+
+        /**
+         * Called when object is to be deserialized from a stream.
+         *
+         * @param stream the stream to read the object from.
+         *
+         * @throws IOException            if the object could not be read.
+         * @throws ClassNotFoundException if a class required to read the object could not be found.
+         * @see <a href="http://download.oracle.com/javase/1.3/docs/guide/serialization/spec/input.doc4.html">The Java
+         * Object Serialization Specification</a>
+         */
+        @Serial
+        private void readObject(ObjectInputStream stream) throws ClassNotFoundException, IOException {
+            stream.defaultReadObject();
+            steerCounter = new int[3];
+            rpmCounter = new int[3];
         }
 
         @Override

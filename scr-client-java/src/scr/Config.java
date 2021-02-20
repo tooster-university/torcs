@@ -18,6 +18,7 @@ public class Config {
     public static int MAX_STEPS;
     public static boolean STAGNATION_REPLACEMENT;
     public static boolean OFFROAD_KILL;
+    public static String SCORE_MODE;
     //
     public static double MUTATION_PROBABILITY;
     public static boolean LERP_CROSSOVER_COMMON_RANDOM;
@@ -59,6 +60,7 @@ public class Config {
             MAX_STEPS = Integer.parseInt(config.getProperty("maxSteps", "0"));
             STAGNATION_REPLACEMENT = Boolean.parseBoolean(config.getProperty("stagnationReplacement", "false"));
             OFFROAD_KILL = Boolean.parseBoolean(config.getProperty("offroadKill", "false"));
+            SCORE_MODE = config.getProperty("score", "distance");
 
             // serialization
             FILE_PREFIX = config.getProperty("filePrefix", "nn");
