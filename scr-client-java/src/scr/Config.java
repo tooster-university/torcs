@@ -16,8 +16,9 @@ public class Config {
     public static String FILE_PREFIX;
     public static int[] LAYER_SIZES;
     public static int MAX_STEPS;
-    public static boolean STAGNATINO_REPLACEMENT;
-
+    public static boolean STAGNATION_REPLACEMENT;
+    public static boolean OFFROAD_KILL;
+    //
     public static double MUTATION_PROBABILITY;
     public static boolean LERP_CROSSOVER_COMMON_RANDOM;
     public static int POPULATION_SIZE;
@@ -56,7 +57,8 @@ public class Config {
             ELITE = Integer.parseInt(config.getProperty("elite", "0"));
 
             MAX_STEPS = Integer.parseInt(config.getProperty("maxSteps", "0"));
-            STAGNATINO_REPLACEMENT = Boolean.parseBoolean(config.getProperty("stagnationReplacement", "false"));
+            STAGNATION_REPLACEMENT = Boolean.parseBoolean(config.getProperty("stagnationReplacement", "false"));
+            OFFROAD_KILL = Boolean.parseBoolean(config.getProperty("offroadKill", "false"));
 
             // serialization
             FILE_PREFIX = config.getProperty("filePrefix", "nn");

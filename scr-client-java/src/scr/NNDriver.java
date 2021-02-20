@@ -47,6 +47,7 @@ public class NNDriver extends Controller {
         ++actionId;
         var specimen = getCurrentSpecimen();
 
+        var action = specimen.network.eval(sensors);
 
         // use time and distance for scoring the driver
         // specimen.currentLapTime = sensors.getCurrentLapTime();
@@ -55,18 +56,20 @@ public class NNDriver extends Controller {
         specimen.distance = sensors.getDistanceRaced();
         if(Math.abs(sensors.getTrackPosition()) >= 1.0) {
             specimen.offtrackPenaltyScaler = 0.8;
+            if(OFFROAD_KILL && Math.abs(sensors.getTrackPosition()) >= 1.3)
+                action.restartRace = true;
         }
+
 //        if (actionId % 100 == 0) System.err.println(sensors.getDistanceRaced());
 
-        var action = specimen.network.eval(sensors);
 
         // dead simple network evaluation
         // early kill non-moving cars - replace them with randomly generated networks
 
-        if (actionId > 500 && Math.abs(specimen.distance) < 5.0 && STAGNATINO_REPLACEMENT) {
-            actionId = -1;
+        if (actionId > 500 && Math.abs(specimen.distance) < 5.0 && STAGNATION_REPLACEMENT) {
             System.err.println("Stagnation - replacing with random network");
             specimen.network = new TorcsNN(TorcsNN.nextRandomWeights());
+            action.restartRace = true;
         }
 
         // simple gearbox algorithm

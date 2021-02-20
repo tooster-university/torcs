@@ -87,3 +87,12 @@ Evolving to generation 101
 > - Best distance: 2806.9
 > - Average score: 36447.81137088817
 
+### Slight oscillations on straight segments, soft start, high RPM oscilating between 3-4, doesn't collide. I'm increasing generations to 6k, max steps to 30000, launching road track - spring (tight and frequent turns, long track). I also add fast quit if we go offroad by 1.3 of track sensor
+
+#### ***WOW !***
+
+Evolving to generation 118
+
+> - Best score was: 777708.0308409263
+> - Best distance: 9813.36
+> - Average score: 37403.10728081172
