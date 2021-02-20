@@ -51,6 +51,10 @@ public class NNDriver extends Controller {
         // ! sensors.getDistanceFromStartLine() doesn't start from 0 but from ~1.5k :/
         // ! but would be better to exclude cars maximizing distance travelled in wrong way
         specimen.distance = sensors.getDistanceRaced();
+        if(Math.abs(sensors.getTrackPosition()) >= 1.0) {
+            System.err.println("off track!");
+            specimen.offtrackPenaltyScaler = 0.8;
+        }
 //        if (actionId % 100 == 0) System.err.println(sensors.getDistanceRaced());
 
         var action = specimen.network.eval(sensors);
@@ -72,8 +76,8 @@ public class NNDriver extends Controller {
             action.gear = 1;
         if(currentRPM > UPPER_RPM)
             action.gear = currentGear + 1;
-        if(currentGear < LOWER_RPM && currentGear != 0)
-            action.gear = currentGear - 1;
+//        if(currentGear < LOWER_RPM && currentGear != 0)
+//            action.gear = currentGear - 1;
 
         return action;
     }
@@ -203,10 +207,11 @@ public class NNDriver extends Controller {
 
         public double score = 0.0; //score of neural net
         private double distance;
+        public double offtrackPenaltyScaler = 1.0;
 //        private transient double currentLapTime = 0.0;
 
         public void assignScore() {
-            score = Math.signum(distance) * Math.pow(Math.abs(distance), 1.5);
+            score = offtrackPenaltyScaler*Math.signum(distance) * Math.pow(Math.abs(distance), 1.5);
         }
 
         @Override
