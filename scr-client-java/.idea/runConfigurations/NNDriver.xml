@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="NNDriver" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="scr.Client" />
+    <module name="scr-client-java" />
+    <option name="PROGRAM_PARAMETERS" value="scr.NNDriver stage:0 verbose:off" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

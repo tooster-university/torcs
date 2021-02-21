@@ -1,32 +1,8 @@
 package scr;
 
 import java.util.Arrays;
-import java.util.Random;
 
 public class Genetics {
-
-    public static class Roulette {
-        /** cumulative contribution to roulette score. Index represents one solution */
-        double[] ranking;
-
-        public Roulette(double[] rawScores) {
-            double sum = Arrays.stream(rawScores).sum();
-            ranking = new double[rawScores.length];
-            ranking[0] = rawScores[0] / sum;
-            for (int i = 1; i < ranking.length; i++)
-                ranking[i] = rawScores[i] / sum + ranking[i - 1];
-        }
-
-        /**
-         * @return returns index of next random child weighted by roulette
-         */
-        int nextRandom() {
-            int idx = Arrays.binarySearch(ranking, Math.random());
-            if (idx < 0) idx = -idx - 1; // this is the usual case, cuz it's fairly impossible for random double to be
-            // in array. We get lower bound of rank to find matching specimen
-            return idx;
-        }
-    }
 
     /**
      * lerps between two genes: result = w1 + f(w2-w1)
@@ -53,14 +29,15 @@ public class Genetics {
 
     /**
      * Randomly mutates each weight in network (beside bias input) with given probability
-     * @param w weights to mutate
+     *
+     * @param w                         weights to mutate
      * @param singleMutationProbability probability of mutating a single edge
      */
-    public static void mutate(double[][][] w, double singleMutationProbability){
+    public static void mutate(double[][][] w, double singleMutationProbability) {
         for (int srcLayer = 0; srcLayer < w.length; srcLayer++)
             for (int dst = 1; dst < w[srcLayer].length; dst++) // skip bias
                 for (int src = 0; src < w[srcLayer][dst].length; src++)
-                    if(Math.random() < singleMutationProbability)
+                    if (Math.random() < singleMutationProbability)
                         w[srcLayer][dst][src] = NN.nextRandomWeight();
     }
 
@@ -85,4 +62,51 @@ public class Genetics {
         }
     }
 
+    /**
+     * stable softmax (shifted down by max)
+     *
+     * @return returns new array (softmaxed). Shouldn't contain NaNs and others
+     */
+    public static double[] softmax(double[] data) {
+        var z = Arrays.stream(data).max().getAsDouble();
+        var e = Arrays.stream(data).map(v -> Math.exp(v - z)).toArray();
+        var total = Arrays.stream(e).sum();
+        var ret = Arrays.stream(e).map(v -> v / total).toArray();
+        assert (Arrays.stream(ret).allMatch(Double::isFinite));
+        return ret;
+    }
+
+    public static class Roulette {
+        /** cumulative contribution to roulette score. Index represents one solution */
+        double[] ranking;
+
+        public Roulette(double[] rawScores) {
+            double sum = Arrays.stream(rawScores).sum();
+            ranking = new double[rawScores.length];
+            ranking[0] = rawScores[0] / sum;
+            for (int i = 1; i < ranking.length; i++)
+                ranking[i] = rawScores[i] / sum + ranking[i - 1];
+        }
+
+        /**
+         * @return returns index of next random child weighted by roulette
+         */
+        int nextRandom() {
+            int idx = Arrays.binarySearch(ranking, Math.random());
+            if (idx < 0) idx = -idx - 1; // this is the usual case, cuz it's fairly impossible for random double to be
+            // in array. We get lower bound of rank to find matching specimen
+            return idx;
+        }
+    }
+
+    public static class RunningAverage {
+        double avg   = 0.0;
+        int    count = 0;
+
+        public double add(double value) {
+            avg = (avg * count + value) / ++count;
+            assert (!Double.isNaN(avg));
+            return avg;
+        }
+    }
 }

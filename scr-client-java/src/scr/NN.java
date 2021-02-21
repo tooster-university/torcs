@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import static java.lang.Math.max;
+import static scr.Config.ACTIVATION_T.TANH;
 
 // neural network with ReLu activation function
 public abstract class NN<IN, OUT> implements Serializable {
@@ -34,7 +35,7 @@ public abstract class NN<IN, OUT> implements Serializable {
     public NN(double[][][] weights) {
 
         this.weights = weights;
-        this.values = new double[weights.length+1][];
+        this.values = new double[weights.length + 1][];
 
         // assert network structure is correct
         assert (this.weights.length > 0); // empty networks are meaningless
@@ -131,14 +132,15 @@ public abstract class NN<IN, OUT> implements Serializable {
      *
      * @param sensors sensors data to use as network input
      *
-     * @return array of doubles that will be used in input layer of network
+     * @return array of doubles that will be used in input layer of network. With assertions enabled, network will check
+     * if this array matches network input size (without bias node).
      */
     public abstract double[] parseInput(final IN sensors);
 
     /**
-     * Override this method to translates network output to viable action
+     * Override this method to translate network output to viable action
      *
-     * @param networkOutput output read from network layer (without bias node)
+     * @param networkOutput Copy of relevant output layer values (without bias node).
      *
      * @return action parsed from network output
      */
@@ -151,7 +153,10 @@ public abstract class NN<IN, OUT> implements Serializable {
      *
      * @return value transformed by activation function
      */
-    public double activationFunction(double input) { return max(input, 0.0); }
+    public double activationFunction(double input) {
+        if (Config.ACTIVATION == TANH) return Math.tanh(input);
+        return max(input, 0.0); // ReLu by default
+    }
 
     /**
      * Called when object has been deserialized from a stream.

@@ -105,7 +105,7 @@ Evolving to generation 101
 Slight oscillations on straight segments, soft start, high RPM oscilating between 3-4, doesn't collide. I'm increasing generations to 6k, max steps to 30000, launching road track - spring (tight and frequent turns, long track). I also add fast quit if we go offroad by 1.3 of track sensor
 ```
 
-#### **WOW**
+### **WOW**
 
 Evolving to generation 118
 
@@ -113,7 +113,7 @@ Evolving to generation 118
 > - Best distance: 9813.36
 > - Average score: 37403.10728081172
 
-#### ***WOW !!1!11!***
+### ***WOW !!1!11!***
 
 Evolving to generation 135
 
@@ -121,13 +121,26 @@ Evolving to generation 135
 > - Best distance: 14004.7
 > - Average score: 206388.66118308454
 
-^ BUT it drives on 1st gear XDDD
+^ BUT it drives on 1st gear and wobbles XDDD
 
 ```
-I'm going sleep and leaving it to calculate
+I'm going to sleep and leaving it to evolve
 ```
 
 ```
 It's wobbly and it constantly on gear 1... But it drifts on turns and stays on track.
-Adding penalty for wobbling and RPM outside of range
+```
+
+```
+Adding penalty for wobbling and RPM outside of range and changing cost function
+```
+
+Evolving to generation 186
+
+> - Best score was: 16362.06205953353
+> - Best distance: 1884.54
+> - Average score: 4281.173629222307
+
+```
+Shieeet happened - I accidentially launched oval learning on incompatible generation save - deserialized verrsion had [6] hidden layer, but the running config was [7, 7], so sometimes population just broke. On the other hand, it clearly showed, that roulette was rather picky, and [6] networks weren't picked up frequently (once every 5 gens maybe?). That's something worth considering - better scale scores to reduce spread (exp to fractional power???).
 ```
