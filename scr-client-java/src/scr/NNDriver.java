@@ -20,7 +20,7 @@ public class NNDriver extends Controller {
     // @fuckon
 
     private static final double STEER_MAGNITUDE                 = 0.1; // abs(steer) < magnitude is said to be steady
-    private static final double MAXIMUM_ACCEPTABLE_TRACK_OFFSET = 1.3; // in track width, how far is acceptable
+    private static final double MAXIMUM_ACCEPTABLE_TRACK_OFFSET = 1.2; // in track width, how far is acceptable
     //
     private int actionId = -1;
     private double lastSteer = 0.0;
